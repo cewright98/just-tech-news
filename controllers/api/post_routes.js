@@ -90,12 +90,15 @@ router.post('/', (req, res) => {
 });
 
 router.put('/upvote', (req, res) => {
-    Post.upvote(req.body, { Vote })
-        .then(dbPostData => res.json(dbPostData))
+    // make sure the session exists first
+    if (req.session) {
+        Post.upvote({ ...req.body, user_id: req.session.user_id }, { Vote, Comment, User })
+        .then(updateVoteData => res.json(updateVoteData))
         .catch(err => {
             console.log(err);
             res.status(400).json(err);
         });
+    }
 });
 
 router.put('/:id', (req, res) => {
